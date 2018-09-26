@@ -1,4 +1,6 @@
-Fuzzy Risk Web is an open source application for analysing impact of risks on Global Production Networks (GPNs) developed at Coventry University (UK). It can be used in strategic decision making on alternative GPN configurations and their susceptibility to risk.
+Fuzzy Risk Web is an open source application for analysing impact of risks on Global Production Networks (GPNs) developed at Coventry University (UK) by Professor Dobrilla Petrovic and her team of researchers under an EU research grant. 
+
+It can be used in strategic decision making on alternative GPN configurations and their susceptibility to risk.
 
 Fuzzy Risk Lab includes the following functionality:
 
