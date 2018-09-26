@@ -1,5 +1,6 @@
-Fuzzy Risk Lab is an open source application for analysing impact of risks on Global Production Networks (GPNs). It can be used in strategic decision making on alternative GPN configurations and their susceptibility to risk.
-Fuzzy Risk Lab includes the following functionalities:
+Fuzzy Risk Web is an open source application for analysing impact of risks on Global Production Networks (GPNs) developed at Coventry University (UK). It can be used in strategic decision making on alternative GPN configurations and their susceptibility to risk.
+
+Fuzzy Risk Lab includes the following functionality:
 
 To define risk factors relevant to a GPN, including a risk description, risk category (Supply, Production, Logistics, Demand, Information and Control, or External), zone of influence, company history related to the risk and mitigation methods applied,
 To define the GPN including its nodes and interdependencies between the nodes,
