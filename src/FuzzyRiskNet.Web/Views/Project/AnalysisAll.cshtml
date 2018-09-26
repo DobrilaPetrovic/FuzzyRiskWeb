@@ -1,0 +1,193 @@
+﻿@using FuzzyRiskNet.Models;
+@using FuzzyRiskNet.Fuzzy;
+@using FuzzyRiskNet.FuzzyRisk;
+@model IEnumerable<Tuple<string, ScenarioAnalysis>>
+@{
+    ViewBag.Title = "Analysis All";
+}
+
+@* This is the view that is used to show the result of all scenarios vs all GPN configurations *@
+
+<h1>~ Summary ~</h1>
+<table>
+    <tr><td style="width: 50%;">GPN</td><td>Expected Loss of Risk</td></tr>
+    @foreach (var GPNModel in Model)
+    {
+        <tr><td>@GPNModel.Item1</td><td>@Html.FormatLoss(GPNModel.Item2.ExpectedInopLoss())</td></tr>
+    }
+</table>
+
+<h1>Average inoperability</h1>
+<table>
+    <tr><td>Node</td>@foreach (var n in Model) { <td>@n.Item1</td> }</tr>
+    @{ var NodeNo = 0; }
+    @foreach (var n in Model.First().Item2.Nodes)
+    {
+        <tr>
+            <td style="width: 50%;">@n.FullName</td>
+
+            @foreach (var s in Model)
+            {
+                <td>
+                    @Html.FormatInop(s.Item2.AverageInop(NodeNo))
+                </td>
+            }
+        </tr>
+        NodeNo++;
+    }    
+</table>
+
+<h1>Loss of risk</h1>
+<table>
+    <tr>
+        <td>Scenario</td>
+        @foreach (var g in Model) { <td>@g.Item1</td> }
+    </tr>
+
+    @foreach (var s in Model.First().Item2.Analysis.Keys)
+    {
+        <tr>
+            <td style="width: 50%;">@s.Name</td>
+            @foreach (var g in Model) { <td>@Html.FormatLoss(g.Item2.Analysis[s].TotalInopLoss())</td> }
+        </tr>
+    }
+    <tr><td>Expected</td>@foreach (var g in Model) { <td>@Html.FormatLoss(g.Item2.ExpectedInopLoss())</td> }</tr>
+</table>
+
+@{  var nodes = Model.First().Item2.Nodes;
+    var nodeslen = nodes.Length; }
+
+<h1>Dependency Values</h1>
+<table>
+    <tr>
+        <td>Supporting</td><td>Dependent</td>
+        @foreach (var GPNModel in Model) { <td>@GPNModel.Item1</td> }
+    </tr>
+    @for (int i = 0; i < nodeslen; i++)
+    {
+        for (int j = 0; j < nodeslen; j++)
+        {
+            if (Model.Any(GPNModel => !GPNModel.Item2.A[i, j].EstimateTFN().IsZero))
+            {
+                <tr>
+                    <td>@nodes[j].FullName</td>
+                    <td>@nodes[i].FullName</td>
+                    @foreach (var GPNModel in Model)
+                    {
+                        <td>@Html.FormatDep(GPNModel.Item2.A[i, j].EstimateTFN())</td> 
+                    }
+                </tr>
+            }
+        }
+    }
+</table>
+
+<h1>Risk Scenarios</h1>
+<table>
+    <tr>
+        <td>Title</td>
+        <td>Likelihood</td>
+        <td>Risk Factor</td>
+        <td>Affected</td>
+        <td>Impact</td>
+        <td>Period</td>
+    </tr>
+    @{
+        var RSModel = Model.First().Item2;
+
+        foreach (var s in RSModel.Analysis.Keys)
+        {
+            var cnt = s.Items.Count();
+
+            for (int j = 0; j < cnt || j < 1; j++)
+            {
+                <tr>
+                    @if (j == 0) { <td rowspan="@Math.Max(1, cnt)">@s.Name</td> <td rowspan="@Math.Max(1, cnt)">@s.Likelihood</td> }
+                    @if (j < cnt)
+                    {
+                        <td>@(s.Items.ElementAt(j).RiskFactor != null ? s.Items.ElementAt(j).RiskFactor.Name : "")</td>
+                        <td>@(s.Items.ElementAt(j).Region != null ? s.Items.ElementAt(j).Region.Name : "") @(s.Items.ElementAt(j).Node != null ? s.Items.ElementAt(j).Node.FullName : "")</td>
+                        <td>@Html.FormatDep(s.Items.ElementAt(j).Purturbation)</td>
+                        <td>@(s.Items.ElementAt(j).StartPeriod) to @(s.Items.ElementAt(j).StartPeriod + s.Items.ElementAt(j).Duration)</td>
+                    }                                                                                                               
+                </tr>
+                }
+            }
+    }
+</table>
+
+  /* Risk Scenarios */
+    @foreach (var s in RSModel.Analysis.Keys)
+    {
+        <h1>@s.Name</h1>
+
+        var img = FuzzyChartingHelpers.DrawBoard(RSModel.Nodes.Select(n => n.Name).ToArray(), Model.Select(m => m.Item1).ToArray(), RSModel.TimeHorizon, (r, c) => Model.ElementAt(c).Item2.Analysis[s].qt.Where(q => q.Item2 == 0 || q.Item2 == 0.5 || q.Item2 == 1), Model.Count() * 400, RSModel.Nodes.Count() * 200);
+
+        <img src="data:image/png;base64, @Convert.ToBase64String(img)" />
+    }
+
+
+@foreach (var GPNModel in Model)
+{
+    <h1>@GPNModel.Item1</h1>
+
+    var db = new RiskDbContext();
+    Dictionary<Node, System.Drawing.Rectangle> rectdic;
+    var gpnimg = IIMDrawing.Draw(GPNModel.Item2.Nodes.ToList(), null, null, d => null, out rectdic, GPNModel.Item2.GPNConfigID);
+
+    <!--<img src="data:image/png;base64, @Convert.ToBase64String(gpnimg)" />
+
+    <br />
+        -->
+    
+    var gpnimg2 = IIMDrawing.Draw(GPNModel.Item2.Nodes.ToList(), null, null, d => GPNModel.Item2.Analysis.First().Value.Project.DivideByNumberOfDependencies ? d.Rate.B / db.Dependencies.Count(d2 => d2.FromID == d.FromID) : d.Rate.B, out rectdic, GPNModel.Item2.GPNConfigID);
+
+    <img src="data:image/png;base64, @Convert.ToBase64String(gpnimg2)" />
+
+    var SModel = GPNModel.Item2;
+
+
+    TFN alltotal = new TFN();
+
+    <div>Loss of risk:</div>
+    <table>
+
+        @foreach (var s in SModel.Analysis.Keys)
+        {
+            alltotal += SModel.Analysis[s].TotalInopLoss();
+                <tr>
+                    <td style="width: 50%;">@s.Name</td>
+                    <td>
+                        @Html.FormatLoss(SModel.Analysis[s].TotalInopLoss())
+                    </td>
+                </tr>
+        }
+            <tr><td>Expected</td><td>@Html.FormatLoss(SModel.ExpectedInopLoss()) </td></tr>
+            <tr><td>Total</td><td>@Html.FormatLoss(alltotal) </td></tr>
+        </table>
+
+        <br />
+
+        alltotal = new TFN();
+        <div>Average inoperability:</div>
+        <p>Note: average inoperability for scenarios as a measure for comparison of configurations can be meaningless as the number of nodes involved in a GPN can vary between configurations.</p>
+        <table>
+
+            @foreach (var s in SModel.Analysis.Keys)
+        {
+            alltotal += SModel.Analysis[s].AverageInop();
+                <tr>
+                    <td style="width: 50%;">@s.Name</td>
+                    <td>
+                        @Html.FormatInop(SModel.Analysis[s].AverageInop())
+                    </td>
+                </tr>
+        }
+            <tr><td>Total</td><td>@Html.FormatInop(alltotal) </td></tr>
+        </table>
+        <br />
+
+        var img = SModel.DrawBoard(SModel.Analysis.Keys.Count() * 400, SModel.Nodes.Count() * 200);
+
+        <img id="networkchart" src="data:image/png;base64, @Convert.ToBase64String(img)" />
+        }

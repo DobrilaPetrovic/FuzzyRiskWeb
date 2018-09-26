@@ -10,3 +10,14 @@ To define risk scenarios, defined by GPN disturbances, durations and likelihood 
 To calculate the risk impact on the GPN expressed via GPN nodes inoperability and total economic loss of risk. This calculation is based on a Fuzzy Dynamic Inoperability Input Output model. GPN parameters’ values and confidence in these values are uncertain and are specified using linguistic values such as Very Low, Low, Mildly Low, Medium, Mildly High, High and Very High.
 To analyse the sensitivity of the model outputs (GPN nodes inoperability and total economic loss of risk) on changes in GPN parameters’ values,
 -To analyse the sensitivity of the outputs on the uncertainty in the GPN parameters.
+
+The software is licensed under the Apache Licence version 2:
+
+https://www.apache.org/licenses/LICENSE-2.0
+
+The documentation is licensed under Creative Commons 4:
+
+https://creativecommons.org/licenses/by/4.0/deed.ast
+
+
+

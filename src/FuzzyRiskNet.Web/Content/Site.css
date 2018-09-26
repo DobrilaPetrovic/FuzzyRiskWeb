@@ -1,0 +1,241 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+/* Custom styling */
+
+
+/* Styles for basic forms
+-----------------------------------------------------------*/
+.fuzzycalc fieldset {
+    border: 1px solid #ddd;
+    padding: 0 1.4em 1.4em 1.4em;
+    margin: 0 0 1.5em 0;
+    display: inline-block;
+    vertical-align: top;
+    width: 300px;
+    height: 250px;
+}
+
+.fuzzycalc legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    width: auto;
+    border-bottom: 0px;
+}
+
+.fuzzycalc textarea {
+    min-height: 75px;
+}
+
+.fuzzycalc .editor-label {
+    margin: 5px;
+    width: 70px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.fuzzycalc .editor-field {
+    margin: 5px;
+    width: 150px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+.field-validation-error {
+    color: #f00;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.input-validation-error {
+    border: 1px solid #f00;
+    background-color: #fee;
+}
+
+.validation-summary-errors {
+    font-weight: bold;
+    color: #f00;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+/* Forms */
+
+.myform { padding: 3px; width: 727px; display: block; }
+.myfieldwithlabel { display: inline-block; text-wrap: avoid; }
+.myfieldwithlabel .myformvalue { min-width: 190px; }
+.myformname { width: 140px; display: inline-block; padding: 2px; vertical-align: top; }
+.myformvalue { display: inline-block; padding: 2px; }
+.myformvalue input { width: 160px; }
+.myformvalue button { width: 160px; }
+.myformvalue input[type='checkbox'] { width: auto; margin-right: 5px; }
+.myformvalue select { min-width: 180px; }
+.myformdblvalue { width: 500px; display: inline-block; height: 20px; }
+.myformtextarea { width: 180px; height: 100px; vertical-align: middle; } 
+.myformdbltextarea { width: 500px; height: 100px; display: inline-block; vertical-align: middle; } 
+.myformdatetime { direction: ltr;  } 
+.myformdate { direction: ltr;  } 
+.myformtime { direction: ltr;  } 
+.myformmandatory { color: Red; }
+.myformvalidation { color: Red; text-align: center; }
+.myformmessage { color: Green; text-align: center; }
+blockquote { margin-left: 10px; margin-right: 10px; }
+.info input { font-family: Tahoma; }
+.info button { font-family: Tahoma; }
+
+.ltrfield { direction: ltr; }
+.myformlongdrop { width: 500px; }
+
+.groupfields, .groupfields td { background-color: #eeeeee; border: 1px solid black; }
+.groupfields td { text-align: center; }
+.groupfields input { width: 50px; text-align: center; }
+
+.crosstabfields { width: auto; margin-left: auto; margin-right: auto; margin-bottom: 20px; }
+.crosstabfields, .crosstabfields td { background-color: #eeeeee; border: 1px solid black; }
+.crosstabfields td { text-align: center; margin: 0; padding: 0px; }
+.crosstabfields input { width: 100%; text-align: center; margin: 0; padding: 0; border: 0; }
+.crosstabfields td:first-child { white-space: nowrap; padding: 0px 5px 0px 5px; }
+
+/* Custom Styles */
+
+.editor-label { font-family: Tahoma; }
+.editor-field { font-family: Tahoma; }
+.editor-field input { font-family: Tahoma; }
+.editor-field button { font-family: Tahoma; }
+.editor-field select { font-family: Tahoma; }
+.pagination { border: 1px solid #e8e7e1; margin: 5px; padding: 5px; }
+.paginationLeft { text-align: right; display: inline-block; width: 50%; }
+.paginationRight { text-align: left; display: inline-block; width: 50%; }
+fieldset { padding: 5px; line-height: 20px; }
+fieldset input, fieldset button
+{
+    font-family: Tahoma; 
+	padding:3px;
+	margin-bottom:5px;
+}
+input.button, button.button 	
+{
+    font-family: Tahoma;
+    padding-right:5px;
+	cursor:pointer;
+	width:205px;
+	margin-left:8px;
+	font-weight:bold;
+ }
+
+#header
+{
+    width: 100%; padding: 3px 3px 3px 3px;
+    border-bottom: solid 1px black;
+    margin: 0px 0px 10px 0px;
+    background-color: #f0f0ff;
+}
+#header h2{margin: 0px; 
+}
+#header h2 img{
+ vertical-align: middle;
+ margin-left: 20px;
+}
+
+/*********************
+		Tables
+*********************/
+table{
+	margin:5px;
+	border-collapse: collapse;
+	table-layout:automatic;
+	width:98%;
+}
+td, th{
+	padding: 2px;
+} 
+thead{
+
+}
+table{
+	background:none;
+}
+td, th{
+	border:1px solid #e8e7e1;
+} 
+thead{
+	background:#f7f6f0;
+}
+.tr-alt-item
+{
+	background:#f9f8f2;
+}
+
+/* Information Tables */
+
+.info { padding: 3px; width: 100%; display: block; border-bottom: solid 1px lightgrey; }
+.infoname { width: 120px; display: inline-block; margin: 2px; }
+.infovalue { width: 210px; display: inline-block; margin: 2px; }
+.infovalue input, .infovalue button { width: 200px; }
+.infovalue select { width: 200px; }
+.dblinfovalue { width: 570px; display: inline-block; }
+
+blockquote { margin-left: 10px; margin-right: 10px; }
+.info input, .info button { font-family: Tahoma; }
+
+#infobox{
+	width:365px;
+	float:left;
+	margin-top:10px;
+}
+#infobox h3{
+	padding:5px;
+	font-size:14px;
+}
+
+#infobox{
+	border:1px solid #e8e7e1;
+}
+#infobox h3{
+	background:#f7f6f0;
+	border-bottom:1px solid #e8e7e1;
+	color:#a43708;
+}
+
+/* Vertical Tabs
+----------------------------------*/
+.ui-tabs-vertical { width: 55em; }
+.ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 12em; }
+.ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+.ui-tabs-vertical .ui-tabs-nav li a { display:block; }
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
+.ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 40em;}
+
+
+.form-group {
+    padding-bottom: 20px;
+}

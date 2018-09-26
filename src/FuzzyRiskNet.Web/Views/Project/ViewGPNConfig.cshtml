@@ -1,0 +1,17 @@
+﻿@using FuzzyRiskNet.Models;
+@using FuzzyRiskNet.Fuzzy;
+@using FuzzyRiskNet.FuzzyRisk;
+
+@{
+    ViewBag.Title = "View GPN Config";
+}
+
+@{
+
+    var db = new RiskDbContext();
+    Dictionary<Node, System.Drawing.Rectangle> rectdic;
+    var proj = db.Projects.Find((int)ViewBag.ProjectID);
+    var img = IIMDrawing.Draw(proj.Nodes.ToList(), null, null, d => proj.DivideByNumberOfDependencies ? d.Rate.B / db.Dependencies.Count(d2 => d2.FromID == d.FromID) : d.Rate.B, out rectdic, (int?)ViewBag.GPNID);
+}
+
+<img id="networkchart" src="data:image/png;base64, @Convert.ToBase64String(img)" usemap="#networkmap" />

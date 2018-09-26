@@ -1,0 +1,13 @@
+﻿@model FuzzyRiskNet.Libraries.Forms.IFieldsTable 
+@using FuzzyRiskNet.Libraries.Forms;
+
+<table border="1" class="grid">
+<thead><tr>    
+    @foreach (var c in Model.ColumnNames) { <th>@c</th>}        
+</tr></thead>
+    @foreach (var row in Model.Rows) { 
+    <tr>
+        @foreach (var c in row) { <td> @{ Html.RenderField(c); }</td> }
+    </tr>
+    }
+</table>

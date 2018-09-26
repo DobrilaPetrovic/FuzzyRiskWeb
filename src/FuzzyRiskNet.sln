@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuzzyRiskNet.Web", "FuzzyRiskNet.Web\FuzzyRiskNet.Web.csproj", "{EADF4885-C37D-47DB-B57A-115C40175962}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuzzyRiskNet.Fuzzy", "FuzzyRiskNet.Fuzzy\FuzzyRiskNet.Fuzzy.csproj", "{CAF9C894-F92C-44F9-AE06-DE220ED9561C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuzzyRiskNet.Models", "FuzzyRiskNet.Models\FuzzyRiskNet.Models.csproj", "{F1DAAEE8-45C3-4307-8C02-6A5610A1B56E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuzzyRiskNet.ConsoleTest", "FuzzyRiskNet.Console\FuzzyRiskNet.ConsoleTest.csproj", "{9DB867E3-8961-47C4-A05D-A14724D28DF3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EADF4885-C37D-47DB-B57A-115C40175962}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EADF4885-C37D-47DB-B57A-115C40175962}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EADF4885-C37D-47DB-B57A-115C40175962}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EADF4885-C37D-47DB-B57A-115C40175962}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAF9C894-F92C-44F9-AE06-DE220ED9561C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAF9C894-F92C-44F9-AE06-DE220ED9561C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAF9C894-F92C-44F9-AE06-DE220ED9561C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAF9C894-F92C-44F9-AE06-DE220ED9561C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1DAAEE8-45C3-4307-8C02-6A5610A1B56E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1DAAEE8-45C3-4307-8C02-6A5610A1B56E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1DAAEE8-45C3-4307-8C02-6A5610A1B56E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1DAAEE8-45C3-4307-8C02-6A5610A1B56E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DB867E3-8961-47C4-A05D-A14724D28DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DB867E3-8961-47C4-A05D-A14724D28DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DB867E3-8961-47C4-A05D-A14724D28DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DB867E3-8961-47C4-A05D-A14724D28DF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,9 @@
+﻿@model FuzzyRiskNet.Libraries.Forms.IFormField
+
+@if (Model.IsVisible) { 
+    <div class="myformvalue">
+        @Html.Raw((Model as FuzzyRiskNet.Libraries.Forms.IOrdinaryFormField).GenerateFieldHtml(""))
+    </div>
+} else {
+    <div style="display: none;">@Html.Raw((Model as FuzzyRiskNet.Libraries.Forms.IOrdinaryFormField).GenerateFieldHtml(""))</div>
+}

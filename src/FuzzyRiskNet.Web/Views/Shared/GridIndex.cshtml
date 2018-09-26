@@ -1,0 +1,41 @@
+﻿@model IGridIndex
+
+@if (Model.FilterModel != null) {
+    Html.RenderPartial("FilterBox", Model.FilterModel); 
+    <br />
+}
+@{
+    var res = Model.RenderGrid();
+}
+
+<table class="table table-bordered table-striped table-responsive">
+    <thead class=""><tr>
+    @foreach (var c in res.Columns) { <th>@c.HeaderName</th> }
+    </tr></thead>
+    @foreach (var r in res.OutputQuery)
+    {
+        var pos = 0;
+        <tr>
+            @foreach (var c in res.Columns)
+            {
+                <td>@(res.ValueFuncs[pos++](r, Html)) </td> 
+            }
+        </tr>
+    }
+    @if (res.OutputQuery.Count() == 0)
+    {
+        <tr class="text-center text-info">
+            <td colspan="@res.Columns.Count()">
+                No records exist.
+            </td>
+        </tr>
+    }
+</table>
+
+   
+<div style="padding: 5px;">
+    @foreach (var a in Model.CreateCustomActions(Url))
+    {
+        <a class='btn btn-default' href='@a.Link'>@a.Text</a>
+    }
+</div>

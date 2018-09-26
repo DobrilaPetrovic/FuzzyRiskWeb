@@ -1,0 +1,33 @@
+﻿@using FuzzyRiskNet.Fuzzy
+@model FuzzyBSC.Result[]
+@{
+    ViewBag.Title = "BSC Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@foreach(var res in Model)
+{
+    @Html.Raw(res.MakeHTMLString())
+}
+
+<style>
+    blockquote
+    {
+        border: 1px solid black;
+    }
+</style>
+
+<script>
+    $(function () {
+        $("blockquote").before($("<a style='display: block' href='javascript:void'>Show Details</a>").click(function()
+        {
+            $(this).next().toggle();
+            if ($(this).text() == 'Hide Details')
+                $(this).text('Show Details');
+            else
+                $(this).text('Hide Details');
+        }));
+        $("blockquote").hide();
+    });
+</script>
+

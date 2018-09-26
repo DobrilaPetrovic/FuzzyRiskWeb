@@ -1,0 +1,111 @@
+﻿@using FuzzyRiskNet.Models;
+@using FuzzyRiskNet.Fuzzy;
+@using FuzzyRiskNet.FuzzyRisk;
+@model IEnumerable<Tuple<string, ScenarioAnalysis>>
+@{
+    ViewBag.Title = "Analysis Sensitivity";
+
+    PerturbationScenario Scenario = ViewBag.Scenario;
+    int? ScenarioID = Scenario != null ? (int?)Scenario.ID : null;
+}
+
+@* This is the view that is used to show the sensitivity of uncertain parameters of all scenarios vs all GPN configurations *@
+
+<h1>Analysis for @(Scenario == null ? "all scenarios (expected)" : Scenario.Name)</h1>
+<table>
+    <tr><td style="width: 50%;">GPN</td><td>Expected Loss of Risk</td></tr>
+    @foreach (var GPNModel in Model)
+    {
+        <tr><td>@GPNModel.Item1</td><td>@Html.FormatLoss(ScenarioID.HasValue ? GPNModel.Item2.InopLoss(ScenarioID.Value) : GPNModel.Item2.ExpectedInopLoss())</td></tr>
+    }
+</table>
+
+@{
+    var versions = new double[] { -0.5, -0.1, -0.05, +0.05, +0.1, +0.5 };
+}
+
+<h1>Multiply Parameters</h1>
+
+@foreach (var GPNModel in Model)
+{
+    var sa = GPNModel.Item2.Reset();
+    var u = sa.GetLossUncertainty(ScenarioID);
+    var loss = sa.GetLoss(ScenarioID).B;
+    <h1>~ @GPNModel.Item1 ~</h1>
+    var values = sa.Parameters.ToArray();
+    <table>
+        <tr>
+            <td style="width: 50%;"></td>
+            @foreach (var ver in versions)
+            {
+                <td colspan="2">@string.Format("{0:P0}", ver)</td>
+            }
+        </tr>
+        <tr>
+            <td style="width: 50%;">Parameter</td>
+            @foreach (var ver in versions)
+            {
+                @*<td>Val</td>*@
+                <td>@string.Format("M", ver)</td>
+                <td>@string.Format("A", ver)</td>
+            }
+        </tr>
+        
+        @foreach (var v in values)
+        {
+            <tr>
+                <td>@v.Value.Title</td>
+                @foreach (var ver in versions)
+                {
+                    sa.SensitivityCombined(ver + 1, new[] { v.Value });
+                    @*<td>@v.Value.NormlizedValue.ToString()</td>*@
+                    <td>@string.Format("{0:P0}", sa.GetLoss(ScenarioID).B / loss - 1) @*(@sa.GetLoss(ScenarioID).B.ToString("0"))*@</td>
+                    <td>@Html.FormatUncertaintyReduction(sa.GetLossUncertainty(ScenarioID), u, false) @*(@sa.GetLossUncertainty(ScenarioID).ToString("0"))*@</td>
+                    }
+                </tr>
+            }
+        </table>
+    }
+
+<h1>Shift Parameters</h1>
+
+@foreach (var GPNModel in Model)
+{
+    var sa = GPNModel.Item2.Reset();
+    var u = sa.GetLossUncertainty(ScenarioID);
+    var loss = sa.GetLoss(ScenarioID).B;
+    <h1>~ @GPNModel.Item1 ~</h1>
+    var values = sa.Parameters.ToArray();
+    <table>
+        <tr>
+            <td style="width: 50%;"></td>
+            @foreach (var ver in versions)
+            {
+                <td colspan="2">@string.Format("{0:P0}", ver)</td>
+            }
+        </tr>
+        <tr>
+            <td style="width: 50%;">Parameter</td>
+            @foreach (var ver in versions)
+            {
+                @*<td>Val</td>*@
+                <td>@string.Format("M", ver)</td>
+                <td>@string.Format("A", ver)</td>
+            }
+        </tr>
+
+        @foreach (var v in values)
+        {
+            <tr>
+                <td>@v.Value.Title</td>
+                @foreach (var ver in versions)
+                {
+                    sa.SensitivityCombined(ShiftRate: ver, ShiftParams: new[] { v.Value });
+                    @*<td>@v.Value.NormlizedValue.ToString()</td>*@
+                    <td>@string.Format("{0:P0}", sa.GetLoss(ScenarioID).B / loss - 1) @*(@sa.GetLoss(ScenarioID).B.ToString("0"))*@</td>
+                    <td>@Html.FormatUncertaintyReduction(sa.GetLossUncertainty(ScenarioID), u, false) @*(@sa.GetLossUncertainty(ScenarioID).ToString("0"))*@</td>
+                }
+            </tr>
+        }
+    </table>
+}

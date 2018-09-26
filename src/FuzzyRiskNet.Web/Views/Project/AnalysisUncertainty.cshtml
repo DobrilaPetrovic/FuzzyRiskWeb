@@ -1,0 +1,117 @@
+﻿@using FuzzyRiskNet.Models;
+@using FuzzyRiskNet.Fuzzy;
+@using FuzzyRiskNet.FuzzyRisk;
+@using FuzzyRiskNet.Helpers;
+@model IEnumerable<Tuple<string, ScenarioAnalysis>>
+@{
+    ViewBag.Title = "Analysis Uncertainty Sensitivity";
+
+    PerturbationScenario Scenario = ViewBag.Scenario;
+    int? ScenarioID = Scenario != null ? (int?)Scenario.ID : null;
+}
+
+@* This is the view that is used to show the sensitivity of uncertain parameters of all scenarios vs all GPN configurations *@
+
+<h1>Analysis for @(Scenario == null ? "all scenarios (expected)" : Scenario.Name)</h1>
+<table>
+    <tr><td style="width: 50%;">GPN</td><td>Expected Loss of Risk</td><td>Ambiguity</td></tr>
+    @foreach (var GPNModel in Model)
+    {
+        <tr>
+            <td>@GPNModel.Item1</td>
+            <td>@Html.FormatLoss(ScenarioID.HasValue ? GPNModel.Item2.InopLoss(ScenarioID.Value) : GPNModel.Item2.ExpectedInopLoss())</td>
+            <td>@GPNModel.Item2.GetLossUncertainty(ScenarioID)</td>
+        </tr>
+    }
+</table>
+
+@{
+    var versions = new Tuple<string, double>[] { Tuple.Create("100%", 0D), Tuple.Create("50%", 0.5D), Tuple.Create("10%", 0.9D) };
+}
+
+@foreach (var GPNModel in Model)
+{
+    var sa = GPNModel.Item2; sa.UseMF = true;
+    var u = sa.Reset().GetLossUncertainty(ScenarioID);
+    
+    var values = sa.Parameters.Where(p => !ScenarioID.HasValue || !p.Key.StartsWith("Likelihood"))
+        .Select(p => Tuple.Create(p.Value.Title, versions.Select(v => sa.ExpectedLossUncertaintyExcept(ScenarioID, v.Item2, p.Value)).ToArray(), p.Value))
+        .OrderBy(p => p.Item2[0]).ToArray();
+
+    bool ShowAdv = false;
+    
+    var nou = sa.RemoveUncertainty().GetLossUncertainty(ScenarioID);
+    <h1>~ @GPNModel.Item1 ~</h1>
+    <table>
+        <tr><td style="width: 50%;" rowspan="@(ShowAdv ? 2 : 1)">Parameter</td>
+            @for (int i = 0; i < versions.Length; i++)
+            {
+                <td colspan="@(ShowAdv ? 3 : 1)">-@versions[i].Item1</td>
+            }
+        </tr>
+        @if (ShowAdv) {
+            <tr>
+                @for (int i = 0; i < versions.Length; i++)
+                {
+                        <td>Param Change</td> 
+                        <td>Expected Loss of Risk Uncertainty</td>
+                }
+            </tr>
+        }
+        
+        @if (ShowAdv)
+        { 
+        <tr><td>(Default)</td><td>@Html.FormatUncertainty(u)</td><td></td><td colspan="@(versions.Count() * 2)"></td></tr>
+        <tr><td>(Total reduction)</td>@for (int i = 0; i < versions.Length; i++) { <td></td><td></td><td>@Html.FormatUncertaintyReduction(u - values.Sum(v => u - v.Item2[i]), u, false)</td> }</tr>
+        <tr><td>(No uncertain param)</td><td></td><td>@Html.FormatUncertainty(nou)</td><td>@Html.FormatUncertaintyReduction(nou, u, false)</td><td colspan="@(versions.Count() * 2 - 2)"></td></tr>
+        }
+        
+        @foreach (var v in values)
+        {
+            <tr><td>@v.Item1</td>
+                @for (int i = 0; i < versions.Length; i++)
+                {
+                    v.Item3.Reset();
+                    var pu = v.Item3.ToTriMF().CalcAmbiguity();
+                    if (ShowAdv) { 
+                        <td>@Html.FormatUncertaintyReduction(sa.ParamAmbSensitivity(v.Item3, versions[i].Item2), pu, false)</td>
+                        <td>@Html.FormatUncertainty(v.Item2[i])</td>
+                    }
+                    <td>@Html.FormatUncertaintyReduction(v.Item2[i], u, false)</td>
+                }
+            </tr>
+        }
+    </table>
+
+    <h1>Double reduction matrix</h1>
+    
+    <table>
+        <tr><td>Parameter</td>@foreach (var p in values) { <td>@p.Item1</td> }</tr>
+        @{ int ind1 = 0; int maxind1 = 0, maxind2 = 0; double maxval = u; }
+        @foreach (var p in values)
+        {
+            int ind2 = 0;
+            <tr>
+                <td>@p.Item1</td>
+                @foreach (var p2 in values)
+                {
+                    var val = sa.ExpectedLossUncertaintyExcept(ScenarioID, 0, p.Item3, p2.Item3);
+                    if (val < maxval) { maxind1 = ind1; maxind2 = ind2; maxval = val; }
+                    if (ind2 >= ind1)
+                    { 
+                        <td>@Html.FormatUncertaintyReduction(val, u, false)</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    ind2++;
+                }
+            </tr>
+            ind1++;
+        }
+    </table>
+    
+    <h1>Max: [@(maxind1),@(maxind2)] (@values[maxind1].Item1, @values[maxind2].Item1) @Html.FormatUncertaintyReduction(maxval, u)</h1>
+}
+

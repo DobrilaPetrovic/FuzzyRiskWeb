@@ -1,0 +1,12 @@
+﻿@model FuzzyRiskNet.Libraries.Forms.IOrdinaryFormField
+
+@if (Model.IsVisible) {
+<div class="myformvalue">
+    @Html.Raw((Model as FuzzyRiskNet.Libraries.Forms.IOrdinaryFormField).GenerateFieldHtml(""))
+    <a href="/Project/TFNCalc?IsNumeric=true" class="mvcformshelperdialog" data-putreturnresult="@(Model.FieldName)" title="Estimating @(Model.Title)"><img src='/Content/calc.png' alt="Estimate" style="vertical-align: middle; padding-bottom: 4px;" /></a>
+</div>
+}
+else
+{
+    <div style="display: none;">@Html.Raw((Model as FuzzyRiskNet.Libraries.Forms.IOrdinaryFormField).GenerateFieldHtml(""))</div>
+}

@@ -1,0 +1,7 @@
+﻿@model FuzzyRiskNet.Libraries.Forms.MultiFields
+@using FuzzyRiskNet.Libraries.Forms;
+
+@foreach (var c in Model.Childs) { 
+    Html.RenderField(c); 
+}
+        

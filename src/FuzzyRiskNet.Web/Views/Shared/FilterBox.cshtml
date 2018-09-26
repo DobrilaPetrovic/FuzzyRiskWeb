@@ -1,0 +1,45 @@
+﻿@model IFilterModel
+
+@if (Model.Items.Length > 0)
+{
+    using (Html.BeginForm(null, null, FormMethod.Get, new { id = Model.FilterBoxID }))
+    {
+        foreach (IFilterItem fi in Model.Items)
+        {
+            var attrobj = new { Class = "form-control " + fi.CssClass, onchange = fi.IsAutoPostBack ? "document.getElementById('" + Model.FilterBoxID + "').submit()" : null };
+
+            if (fi.ViewName == "Hidden")
+            { @Html.Hidden(fi.Name, (fi as IValueFilterItem<string>).Value) }
+            else
+            {
+                bool isdouble = fi.ViewName == "Hierarchy";
+                <div class="form-group">
+                    <label for="@fi.Name" class="control-label col-md-2">@fi.Description</label>
+                    <div class="col-md-@(isdouble ? 10 : 4)">
+                        @switch (fi.ViewName)
+                        {
+                            case "DropDown": @Html.DropDownList(fi.Name, (fi as IDropDownFilterItem).ListItems, (fi as IDropDownFilterItem).HasDefault ? (fi as IDropDownFilterItem).DefaultText ?? "" : null, attrobj) break;
+                            case "TextBox": @Html.TextBox(fi.Name, (fi as IValueFilterItem<string>).Value, attrobj) break;
+                            case "CheckBox": @Html.CheckBox(fi.Name, (fi as IValueFilterItem<bool>).Value, attrobj) break;
+                            case "Label": @Server.HtmlEncode((fi as IValueFilterItem<string>).Value) break;
+                            case "Hidden": break;
+                            case "Hierarchy":
+                                <span>@Html.Raw(string.Join(" &gt; ", (fi as IHierarchyFilterItem).GetAllLinks(Url).Select(l => l.Value == "" ? l.Text : String.Format("<a href='{0}'>{1}</a>", l.Value, l.Text))))</span>
+                                var allitems = (fi as IHierarchyFilterItem).AllItemsLink(Url);
+                                <span>&nbsp;[ @Html.Raw(allitems.Value == "" ? allitems.Text : String.Format("<a href='{0}'>{1}</a>", allitems.Value, allitems.Text)) ]</span>
+                                break;
+                        }
+                    </div>
+                </div>
+            }
+        }
+        if (Model.ShowSubmit)
+        { <div class="form-group"><div class="col-md-10 col-md-offset-2"><input class="form-control btn btn-primary" type="submit" value="Search" /></div></div> }
+    }
+}
+
+<script type="text/javascript">
+    $(function () {
+        //$('.infovalue select').css({ 'min-height': '20px' });
+    });
+</script>

@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "InsertIndicator";
+}
+
+<h2>Insert Indicator</h2>
+
+
+@using (Html.BeginForm(null, null, FormMethod.Post))
+{
+    <span>Code:</span> @Html.TextBox("Code")
+    <br />
+    @Html.ValidationMessage("Code")
+    <br />
+    <input type='submit' class='button' value='Submit' />
+}

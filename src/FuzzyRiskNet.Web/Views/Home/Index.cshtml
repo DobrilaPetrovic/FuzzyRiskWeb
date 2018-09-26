@@ -1,0 +1,10 @@
+﻿<div class="list-group">
+    @Html.ActionLink("Manage Projects (Risk and BSC Analysis)", "Index", "Project", null, new { Class = "list-group-item", style = "font-weight: bold" }) 
+    <a href="~/Content/Risk Software User Guide.pdf" class="list-group-item">Download User Guide</a>
+    @Html.ActionLink("Manage Risk Factors", "Index", "RiskFactor", null, new { Class = "list-group-item" })
+    @Html.ActionLink("View Indicators", "IndexIndicators", "Indicators", null, new { Class = "list-group-item" })
+    @Html.ActionLink("View Countries", "IndexCountries", "Indicators", null, new { Class = "list-group-item" })
+    @Html.ActionLink("Update Countries", "UpdateCountries", "Indicators", null, new { Class = "list-group-item" })
+    @Html.ActionLink("Fuzzy Calculator", "Index", "FuzzyCalc", null, new { Class = "list-group-item" })
+    @Html.ActionLink("About Us", "About", "Home", null, new { Class = "list-group-item" })
+</div>

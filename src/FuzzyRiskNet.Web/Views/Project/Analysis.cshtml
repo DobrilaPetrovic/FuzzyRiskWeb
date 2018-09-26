@@ -1,0 +1,174 @@
+﻿@model FuzzyIIMViewModel
+@using FuzzyRiskNet.Models;
+@using FuzzyRiskNet.Fuzzy;
+@using FuzzyRiskNet.FuzzyRisk;
+@{
+    ViewBag.Title = "Analysis: " + Model.IIM.Project.Name;
+}
+
+@* This is the view that details the inoperability analysis on the GPN (vs a scenario or an ad-hoc setting by the sliders)*@
+
+<div id="top"></div>
+
+<style>
+    .IIMResultTable td {
+        padding: 5px 5px 5px 5px;
+    }
+</style>
+
+@{     RouteValueDictionary queryStringDictionary = new RouteValueDictionary(Request.QueryString.AllKeys.ToDictionary(key => key, key => (object)Request.QueryString[key])); }
+
+@using (Html.BeginForm(null, null, queryStringDictionary, FormMethod.Post))
+{
+        @Html.Hidden("ProjectID", Model.IIM.Project.ID)
+        <span>Scenario: </span> @Html.DropDownList("ScenarioID", Model.Scenarios)
+        <span>GPN Config: </span>@Html.DropDownList("GPNConfigID", Model.GPNConfigs)
+        <input type="submit" value="Change" />
+    <script type="text/javascript">
+        $(function () {
+            $("#ScenarioID").change(function () { $('form').submit(); });
+            $("#GPNConfigID").change(function () { $('form').submit(); });
+            $('form input[type="submit"]').hide();
+            $("img.lazy").lazyload();
+        });
+    </script>
+
+    var db = new RiskDbContext();
+    Dictionary<Node, System.Drawing.Rectangle> rectdic;
+    var img = IIMDrawing.Draw(Model.IIM.Nodes, n => Model.IIM.ct.Average(c => c[Model.IIM.Nodes.IndexOf(n)].GetInterval(1).Min) /*n.DefaultPurturbation.B*/, n => Model.IIM.AverageInop(Model.IIM.Nodes.IndexOf(n)).B, d => Model.IIM.Project.DivideByNumberOfDependencies ? d.Rate.B / db.Dependencies.Count(d2 => d2.FromID == d.FromID) : d.Rate.B, out rectdic, Model.GPNConfigID);
+
+    @Html.ValidationSummary(true)
+
+            <div style="position: relative;">
+
+
+                <img id="networkchart" src="data:image/png;base64, @Convert.ToBase64String(img)" usemap="#networkmap" />
+
+                <map name="networkmap">
+                    @for (int i = 0; i < Model.IIM.Nodes.Count; i++)
+            {
+                var r = rectdic[Model.IIM.Nodes[i]];
+                        <area shape="rect" coords="@string.Format("{0}, {1}, {2}, {3}", r.Left, r.Top, r.Right, r.Bottom)" href="#tabs@(i)" alt="@Model.IIM.Nodes[i].Name" />
+            }
+                </map>
+
+                <script>
+                    function getLabel(val) {
+                        var label = '';
+                        if (val == '' || isNaN(val) || val == null) val = 0;
+                        switch (Math.floor(val * 6)) {
+                            case 0: label = 'Very Low'; break;
+                            case 1: label = 'Low'; break;
+                            case 2: label = 'Mildly Low'; break;
+                            case 3: label = 'Medium'; break;
+                            case 4: label = 'Mildly High'; break;
+                            case 5: label = 'High'; break;
+                            case 6: label = 'Very High'; break;
+                        }
+                        return label + " (" + val + ")";
+                    }
+                    function registerSlider(nid, i) {
+                        $(function () {
+                            var $sliderval = $('#sliderval' + i);
+                            var $node = $('#Node' + nid);
+                            $("#slider" + i).slider({
+                                value: $node.val(),
+                                min: 0, max: 1, step: 0.05,
+                                slide: function (ev, ui) {
+                                    $node.val(ui.value);
+                                    $sliderval.html(getLabel(ui.value));
+                                },
+                                change: function (ev, ui) {
+                                    //$('form').attr('action', '#tabs' + i);
+                                    $('form').submit();
+                                    //$(document.documentElement).load($('form').attr('action'), $('form').serializeArray());
+                                }
+                            });
+                            $sliderval.html(getLabel($node.val()));
+                        });
+                    }
+                </script>
+
+
+
+                @for (int i = 0; i < Model.IIM.Nodes.Count; i++)
+        {
+            var nid = Model.IIM.Nodes[i].ID;
+            var r = rectdic[Model.IIM.Nodes[i]];
+            if (Model.Form.ShowSliders)
+            {
+                <div style="position: absolute; top: @(r.Top + 55)px; left: @(r.Left)px; background-color: White; border: 1px solid black; width: @(IIMDrawing.NodeWidth + 1)px; height: 20px; overflow: hidden; padding: 1px 3px 1px 3px;">
+                    <div id="slider@(i)" style="width: 100px; display: inline-block; margin-top: 2px;"></div><span style="padding-left: 10px; position: relative; top: -2px; font-size: small;" id="sliderval@(i)"></span>
+                </div>
+                    <div style="display: none;">
+                        @{Html.RenderField(Model.Form.FindField("Node" + nid));}
+                    </div>
+
+                    <script>
+                        registerSlider('@(nid)', '@(i)');
+                    </script>
+            }
+        }
+
+            </div>
+
+            <div style="padding-bottom: 30px; font-weight: bold;">Total Loss of Risk: @Model.IIM.Nodes.Select((n, ind) => Model.IIM.TotalInopLoss(ind)).Aggregate((t1, t2) => t1 + t2).ToString("0.00")</div>
+
+
+            <div id="tabs">
+                <!--
+                <ul>
+                @for (int i = 0; i < Model.IIM.Nodes.Count; i++)
+                {
+                  <li><a href="#tabs@(i)">@Model.IIM.Nodes[i].Name</a></li>
+                }
+                </ul>
+                //-->
+
+@{ 
+    RouteValueDictionary imageQueryDic = new RouteValueDictionary(Request.Form.AllKeys.ToDictionary(key => key, key => (object)Request.Form[key])); 
+    imageQueryDic.Add("NodePos", 0);
+    if (imageQueryDic.ContainsKey("ProjectID"))
+    {
+        imageQueryDic["ProjectID"] = Model.IIM.Project.ID;
+    }
+    else
+    {
+        imageQueryDic.Add("ProjectID", Model.IIM.Project.ID);
+    }
+}
+
+@for (int i = 0; i < Model.IIM.Nodes.Count; i++)
+{
+        var nid = Model.IIM.Nodes[i].ID;
+        <div id="tabs@(i)">
+            <a href="#top">Go back to GPN</a> - <a href="@Url.Action("IndexNodes", null, new { ProjectID = Model.IIM.Project.ID })">Edit Nodes</a><br />
+            <br />
+            <br />
+            Name: @Model.IIM.GetName(i) <br />
+            <table style="width: auto;" class="IIMResultTable">
+                <tr>
+                    <td>Perturbation (init.): @(((Model.IIM.ct[0][i] as TriMF).ConvertTFN()).ToString("0.####"))</td>
+                    <td>Perturbation (def.): @Model.IIM.Nodes[i].DefaultPurturbation.ToString("0.####")</td>
+                </tr>
+                <tr>
+                    <td>Inoperability (avg.): @Model.IIM.AverageInop(i).ToString("0.####")</td>
+                    <td>Inoperability (steady): @Model.IIM.SteadyInop(i).ToString("0.####")</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Loss of Risk: @Model.IIM.TotalInopLoss(i).ToString("0.00")</td>
+                </tr>
+            </table>
+            
+            @{ imageQueryDic["NodePos"] = i; }
+
+            <img class="lazy" data-original="@Url.Action("ShowInopChart", imageQueryDic)" alt=""  width="1000" height="400" />
+            @{/*<img src="data:image/png;base64, @Convert.ToBase64String(Model.IIM.GenerateChart(i, 1000, 400, true, true))" />
+            <img src="data:image/png;base64, @Convert.ToBase64String(Model.IIM.SteadyInopMF(i).ToArray().Draw("Last Inoperability - " + Model.IIM.GetName(i), 330, 200, 0, 1))" />
+            <img src="data:image/png;base64, @Convert.ToBase64String(Model.IIM.AverageInopMF(i).ToArray().Draw("Avg. Inoperability - " + Model.IIM.GetName(i), 800, 100, 0, 1))" />*/}
+        </div>
+    }
+</div>
+
+            <div class="editor-field"><input type="submit" value="Update" /></div>
+}

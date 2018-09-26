@@ -1,0 +1,53 @@
+﻿@model FuzzyRiskNet.Libraries.Forms.IPageFormModel
+@using FuzzyRiskNet.Libraries.Forms;
+
+@{ 
+    RouteValueDictionary queryStringDictionary = new RouteValueDictionary(Request.QueryString.AllKeys.ToDictionary(key => key, key => (object)Request.QueryString[key]));
+    var formattrdic = new Dictionary<string, object>();
+    if (Model.MainFields.WithDescendants().Any(f => f is FuzzyRiskNet.Libraries.Forms.IRequiredMultiPartFormField)) { formattrdic.Add("enctype", "multipart/form-data"); }
+}
+
+@using (Html.BeginForm(null, null, queryStringDictionary, FormMethod.Post, formattrdic)) {
+    @Html.ValidationSummary(true)
+        
+    <fieldset class="myform">
+        <div class="myformmessage">
+            @ViewData["FormMessage"]
+        </div>
+
+        @if (Request.HttpMethod != "GET" && !Model.IsValid)
+            { 
+        <div class="myformvalidation">
+            @Html.Raw(string.Join("<br/>", Model.GetAllValidationErrors().Select(t => t.Item2).Where(s => s != "")))
+        </div>
+        }
+            
+        @foreach (var v in Model.MainFields)
+        {
+            if (v is ITitledFormField && v.IsVisible && (v as ITitledFormField).Title != "") 
+            {
+                <div class="myfieldwithlabel">
+                <div class="myformname">
+                    @Html.Raw(v.IsOptional ? "&nbsp;" : "<span class='myformmandatory'>*</span>")
+                    <label for="@v.FieldName">@((v as ITitledFormField).Title)</label>
+                </div>                
+                @{ Html.RenderField(v); }
+                </div>
+            }
+            else
+            {
+                Html.RenderField(v);
+            }
+        }
+        <p>
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </p>
+    </fieldset>
+
+    <div style="padding: 5px;">
+        @foreach (var a in Model.CreateFormLinks(Url))
+        {
+            <a class='btn btn-default' href='@a.Link'>@a.Text</a>
+        }
+    </div>
+}

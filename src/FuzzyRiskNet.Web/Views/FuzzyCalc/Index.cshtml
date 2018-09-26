@@ -1,0 +1,66 @@
+﻿@using FuzzyRiskNet.Fuzzy;
+@using FuzzyRiskNet.Helpers;
+
+<div class="fuzzycalc">
+@using (Html.BeginForm())
+{
+    <fieldset>
+    <legend>Fuzzy Calculation Data</legend>
+        <div class="editor-label">Parameters</div>
+        <div class="editor-field">@Html.TextArea("Parameters")</div><br />
+        <div class="editor-label">Formula</div>
+        <div class="editor-field">@Html.TextBox("Formula")</div><br />
+        <div class="editor-label">&nbsp;</div>
+        <div class="editor-field"><input type="submit" value="Generate" /></div>
+    </fieldset>
+    <fieldset style="width: 200px;">
+        <legend>Examples</legend>
+        <ol>
+        @foreach (MFFuncParam exp in Model.Examples)
+        {
+            <li>@Html.ActionLink(exp.CustomTitle ?? exp.Formula, "Index", exp)</li>
+        }
+        </ol>
+    </fieldset>
+}
+</div>
+
+@if (Model.MFFunc != null)
+{
+<div id="tabs">
+<ul>
+<li><a href="#tabs-1">Result</a></li>
+<li><a href="#tabs-2">Parameters</a></li>
+<li><a href="#tabs-3">Model</a></li>
+</ul>
+<div id="tabs-1">
+<img src="@Url.Action("MFImage", new { Formula = Model.Formula, Parameters = Model.Parameters })" alt="Membership function" />
+</div>
+<div id="tabs-2">
+@foreach (var mf in Model.MFFunc.MFs)
+{
+    <img src="@Url.Action("MFImage", new { Formula = mf.Name, Parameters = Model.Parameters, Simulate = false, Width = 400, Height = 200 })" alt="@mf.Name" />
+    <div>Ambiguity: @Math.Round(HelperFunctions.CalcAmbiguity(mf, 0.001D), 2) </div>
+    <div>Fuzziness: @Math.Round(HelperFunctions.CalcFuzziness(mf, 0.001D), 2) </div>
+    <div>Specificity: @Math.Round(HelperFunctions.CalcSpecificity(mf, 0.001D), 2) </div>
+}
+</div>
+<div id="tabs-3">
+    @foreach (var mf in Model.MFFunc.MFs)
+    {<div>@mf.Name is @mf </div>}
+    <div>Expression: @Model.MFFunc.Function</div>                                                             
+</div>
+</div>
+}
+else
+{
+    @Html.ValidationMessage("Formula")
+    @Html.ValidationMessage("Parameters")
+}
+
+ <script>
+$(function() {
+    $("#tabs").tabs();
+    $("input[type=submit]").button();
+});
+</script>

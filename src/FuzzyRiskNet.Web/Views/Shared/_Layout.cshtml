@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - FuzzyRiskNet</title>
+    @Styles.Render("~/Content/css")
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.8.2/themes/base/jquery-ui.css" />
+
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+    
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.8.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.lazyload.min.js"></script>
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/otherjs")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("FuzzyRiskNet", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("View Projects", "Index", "Project")</li>
+                            <li>@Html.ActionLink("Insert...", "InsertProject", "Project")</li>
+                            <li role="separator" class="divider"></li>
+                            @using Microsoft.AspNet.Identity;
+                            @{
+                                var uid = User.Identity.GetUserId();
+                                if (uid != null)
+                                {
+                                    var projects = (new FuzzyRiskNet.Models.RiskDbContext()).Projects.Where(p => p.UserID == uid).ToArray();
+                                    foreach (var p in projects)
+                                    {
+                                    <li>@Html.ActionLink(p.Name, "IndexNodes", "Project", new { ProjectID = p.ID }, null)</li>
+                                    }
+                                }
+                            }
+
+                        </ul>
+                    </li>
+                    <li>@Html.ActionLink("Fuzzy Calc", "Index", "FuzzyCalc")</li>
+                    <li><a href="#"  class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Base Info <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Manage Risk Factors", "Index", "RiskFactor")</li>
+                            <li>@Html.ActionLink("View Indicators", "IndexIndicators", "Indicators")</li>
+                            <li role="separator" class="divider"></li>
+                            <li>@Html.ActionLink("View Countries", "IndexCountries", "Indicators")</li>
+                            <li>@Html.ActionLink("Update Countries", "UpdateCountries", "Indicators")</li>
+                        </ul>
+                    </li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>@ViewBag.Title</h1>
+        <hr />
+    </div>
+    <div class="container body-content" id="maincontent">
+        @RenderBody()
+    </div>
+    <div class="container">
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - FuzzyRiskNet</p>
+        </footer>
+    </div>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>
